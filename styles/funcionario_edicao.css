@@ -1,0 +1,78 @@
+/* funcionario_edicao.css */
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 10px;
+}
+
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.botao-voltar {
+    display: inline-block;
+    width: calc(50% - 10px);
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    color: white;
+    margin-right: 10px;
+}
+
+.botao-voltar:first-of-type {
+    background-color: #007BFF; /* Azul */
+}
+
+.botao-voltar:first-of-type:hover {
+    background-color: #0056b3;
+}
+
+.botao-voltar:last-of-type {
+    background-color: #6c757d; /* Cinza */
+}
+
+.botao-voltar:last-of-type:hover {
+    background-color: #5a6268;
+}

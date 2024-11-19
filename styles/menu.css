@@ -1,0 +1,97 @@
+/* menu.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: center; /* Centraliza horizontalmente */
+    height: 100vh; /* Ocupa 100% da altura da janela */
+    margin: 0;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+p {
+    margin-bottom: 20px;
+}
+
+.container {
+    display: flex; /* Habilita o layout flexível */
+    justify-content: center; /* Centraliza os conjuntos */
+    flex-wrap: wrap; /* Permite que os conjuntos se movam para a próxima linha se não houver espaço */
+    gap: 20px; /* Espaçamento entre os conjuntos */
+}
+
+.menu-conjunto {
+    background-color: #ffffff; /* Fundo branco para os conjuntos */
+    border-radius: 5px; /* Bordas arredondadas */
+    padding: 20px; /* Espaçamento interno */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    width: 200px; /* Largura fixa para os conjuntos */
+    display: flex; /* Permite o uso de flexbox dentro do conjunto */
+    flex-direction: column; /* Coloca os itens em coluna */
+    align-items: center; /* Centraliza os itens horizontalmente */
+}
+
+.menu-principal {
+    list-style-type: none;
+    padding: 0;
+    margin: 0; /* Remove margem para centralização adequada */
+    display: flex; /* Permite o uso de flexbox */
+    flex-direction: column; /* Coloca os botões em coluna */
+    align-items: center; /* Centraliza os botões horizontalmente */
+    width: 100%; /* Garante que a lista ocupe a largura total do conjunto */
+}
+
+.menu-principal li {
+    margin-bottom: 15px;
+    width: 100%; /* Garante que os botões ocupem a largura total do conjunto */
+    display: flex; /* Habilita flexbox para os botões */
+    justify-content: center; /* Centraliza os botões dentro do li */
+}
+
+.menu-principal a {
+    display: inline-block;
+    width: 100%; /* Largura total dos botões */
+    padding: 10px;
+    background-color: #5cb85c; /* Cor do botão */
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    text-align: center; /* Garantindo que o texto fique centralizado */
+}
+
+.menu-principal a:hover {
+    background-color: #4cae4c; /* Cor ao passar o mouse */
+}
+
+.logout-button {
+    display: inline-block;
+    width: 200px; /* Largura fixa para o botão de logout */
+    padding: 10px;
+    background-color: #d9534f; /* Cor do botão de logout */
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 20px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #c9302c; /* Cor ao passar o mouse no botão de logout */
+}
+
+/* Media Queries para Responsividade */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Coloca os conjuntos em coluna em telas pequenas */
+        align-items: center; /* Centraliza os conjuntos */
+    }
+}
