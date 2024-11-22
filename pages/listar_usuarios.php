@@ -1,5 +1,6 @@
 <?php
 include('../includes/db_connect.php');
+session_start(); // Certifique-se de que a sessão está ativa para verificar os dados do usuário logado.
 
 if (!$conn) {
     die("Conexão falhou: " . mysqli_connect_error());
@@ -19,6 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
     }
 }
 
+// Recuperar informações do usuário logado
+$user_id = $_SESSION['user_id'];
+$sql_user = "SELECT setor FROM usuario WHERE id = ?";
+$stmt_user = $conn->prepare($sql_user);
+$stmt_user->bind_param('i', $user_id);
+$stmt_user->execute();
+$result_user = $stmt_user->get_result();
+$user_data = $result_user->fetch_assoc();
+
+$setor_usuario = $user_data['setor'] ?? '';
 $sql = "SELECT id, nome, email, setor FROM usuario";
 $result = $conn->query($sql);
 ?>
@@ -65,12 +76,15 @@ $result = $conn->query($sql);
                     </tr>
                 <?php endwhile; ?>
             </table>
-            <button type='submit'>Deletar Usuário(s) Selecionado(s)</button>
+            
+            <?php if ($setor_usuario === 'Departamento de Tecnologia da Informação'): ?>
+                <button type="submit" onclick="return confirm('Tem certeza que deseja excluir os usuários selecionados?')">Deletar Usuário(s) Selecionado(s)</button>
+            <?php endif; ?>
         </form>
     <?php else: ?>
         <p>Nenhum usuário encontrado.</p>
     <?php endif; ?>
-        <br></br>
+        <br><br>
     <a href="menu.php">Voltar ao Menu Principal</a>
     </div>
 </body>
