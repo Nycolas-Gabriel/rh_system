@@ -23,18 +23,30 @@ $setor_usuario = $user_data['setor'] ?? '';
 $view = isset($_GET['view']) && in_array($_GET['view'], ['simplified', 'complete']) ? $_GET['view'] : 'complete';
 $limite = isset($_GET['limite']) && in_array($_GET['limite'], [10, 50, 100, 500]) ? (int)$_GET['limite'] : 50;
 
-// Filtro
+// Filtros
 $filtro = isset($_GET['filtro']) ? $_GET['filtro'] : '';
 $criterio = isset($_GET['criterio']) ? $_GET['criterio'] : 'nome';
+$status_filtro = isset($_GET['status']) ? $_GET['status'] : '';
 
 // Consulta para buscar funcionários
 $sql = $view === 'simplified' 
-    ? "SELECT id, nome, cargo FROM funcionarios WHERE $criterio LIKE ? LIMIT ?"
-    : "SELECT id, nome, matricula, data_nascimento, cpf, identidade, data_admissao, email, telefone, cargo, filhos, genero, tipo, numero_registro FROM funcionarios WHERE $criterio LIKE ? LIMIT ?";
+    ? "SELECT id, nome, cargo, status FROM funcionarios WHERE $criterio LIKE ?"
+    : "SELECT id, nome, matricula, data_nascimento, cpf, identidade, data_admissao, email, telefone, cargo, filhos, genero, tipo, numero_registro, status FROM funcionarios WHERE $criterio LIKE ?";
+
+if (!empty($status_filtro)) {
+    $sql .= " AND status = ?";
+}
+
+$sql .= " LIMIT ?";
 
 $stmt = $conn->prepare($sql);
 $filtro_param = '%' . $filtro . '%';
-$stmt->bind_param('si', $filtro_param, $limite);
+
+if (!empty($status_filtro)) {
+    $stmt->bind_param('ssi', $filtro_param, $status_filtro, $limite);
+} else {
+    $stmt->bind_param('si', $filtro_param, $limite);
+}
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -59,7 +71,16 @@ $result = $stmt->get_result();
             <option value="cargo" <?= $criterio === 'cargo' ? 'selected' : '' ?>>Cargo</option>
             <option value="cpf" <?= $criterio === 'cpf' ? 'selected' : '' ?>>CPF</option>
         </select>
-        <input type="text" name="filtro" placeholder="Digite sua busca..." value="<?= htmlspecialchars($filtro) ?>">
+        <input type="text" name="filtro" placeholder="Digite sua busca..." value="<?= htmlspecialchars($filtro ?? '') ?>">
+        
+        <label for="status">Status:</label>
+        <select name="status" id="status">
+            <option value="">Todos</option>
+            <option value="Ativo" <?= $status_filtro === 'Ativo' ? 'selected' : '' ?>>Ativo</option>
+            <option value="Inativo" <?= $status_filtro === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
+            <option value="Licenca" <?= $status_filtro === 'Licenca' ? 'selected' : '' ?>>Licença</option>
+            <option value="Desligado" <?= $status_filtro === 'Desligado' ? 'selected' : '' ?>>Desligado</option>
+        </select>
         <button type="submit">Filtrar</button>
     </form>
 
@@ -72,14 +93,14 @@ $result = $stmt->get_result();
             <option value="100" <?= $limite === 100 ? 'selected' : '' ?>>100</option>
             <option value="500" <?= $limite === 500 ? 'selected' : '' ?>>500</option>
         </select>
-        <input type="hidden" name="filtro" value="<?= htmlspecialchars($filtro) ?>">
-        <input type="hidden" name="criterio" value="<?= htmlspecialchars($criterio) ?>">
+        <input type="hidden" name="filtro" value="<?= htmlspecialchars($filtro ?? '') ?>">
+        <input type="hidden" name="criterio" value="<?= htmlspecialchars($criterio ?? '') ?>">
     </form>
 
     <!-- Alteração de visualização -->
     <div class="view-toggle">
-        <a href="?view=simplified&criterio=<?= $criterio ?>&filtro=<?= urlencode($filtro) ?>&limite=<?= $limite ?>" <?= $view === 'simplified' ? 'class="active"' : '' ?>>Visualização Simplificada</a>
-        <a href="?view=complete&criterio=<?= $criterio ?>&filtro=<?= urlencode($filtro) ?>&limite=<?= $limite ?>" <?= $view === 'complete' ? 'class="active"' : '' ?>>Visualização Completa</a>
+        <a href="?view=simplified&criterio=<?= htmlspecialchars($criterio ?? '') ?>&filtro=<?= urlencode($filtro ?? '') ?>&status=<?= htmlspecialchars($status_filtro ?? '') ?>&limite=<?= $limite ?>" <?= $view === 'simplified' ? 'class="active"' : '' ?>>Visualização Simplificada</a>
+        <a href="?view=complete&criterio=<?= htmlspecialchars($criterio ?? '') ?>&filtro=<?= urlencode($filtro ?? '') ?>&status=<?= htmlspecialchars($status_filtro ?? '') ?>&limite=<?= $limite ?>" <?= $view === 'complete' ? 'class="active"' : '' ?>>Visualização Completa</a>
     </div>
 
     <!-- Tabela de Funcionários -->
@@ -106,8 +127,10 @@ $result = $stmt->get_result();
                         <th>Gênero</th>
                         <th>Tipo</th>
                         <th>Número de Registro</th>
+                        <th>Status</th>
                     <?php else: ?>
                         <th>Cargo</th>
+                        <th>Status</th>
                     <?php endif; ?>
                     <th>Ações</th>
                 </tr>
@@ -118,26 +141,28 @@ $result = $stmt->get_result();
                         <?php if ($setor_usuario === 'Departamento de Tecnologia da Informação'): ?>
                             <td><input type="checkbox" name="delete[]" value="<?= $row['id'] ?>"></td>
                         <?php endif; ?>
-                        <td><?= htmlspecialchars($row['id']) ?></td>
-                        <td><?= htmlspecialchars($row['nome']) ?></td>
+                        <td><?= htmlspecialchars($row['id'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($row['nome'] ?? '') ?></td>
                         <?php if ($view === 'complete'): ?>
-                            <td><?= htmlspecialchars($row['matricula']) ?></td>
-                            <td><?= htmlspecialchars($row['data_nascimento']) ?></td>
-                            <td><?= htmlspecialchars($row['cpf']) ?></td>
-                            <td><?= htmlspecialchars($row['identidade']) ?></td>
-                            <td><?= htmlspecialchars($row['data_admissao']) ?></td>
-                            <td><?= htmlspecialchars($row['email']) ?></td>
-                            <td><?= htmlspecialchars($row['telefone']) ?></td>
-                            <td><?= htmlspecialchars($row['cargo']) ?></td>
-                            <td><?= htmlspecialchars($row['filhos']) ?></td>
-                            <td><?= htmlspecialchars($row['genero']) ?></td>
-                            <td><?= htmlspecialchars($row['tipo']) ?></td>
-                            <td><?= htmlspecialchars($row['numero_registro']) ?></td>
+                            <td><?= htmlspecialchars($row['matricula'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['data_nascimento'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['cpf'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['identidade'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['data_admissao'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['email'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['telefone'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['cargo'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['filhos'] ?? '') ?></td>
+                            <td><?= htmlspecialchars(ucfirst(strtolower($row['genero'] ?? ''))) ?></td> <!-- Normaliza genero -->
+                            <td><?= htmlspecialchars($row['tipo'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['numero_registro'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['status'] ?? '') ?></td>
                         <?php else: ?>
-                            <td><?= htmlspecialchars($row['cargo']) ?></td>
+                            <td><?= htmlspecialchars($row['cargo'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['status'] ?? '') ?></td>
                         <?php endif; ?>
                         <td>
-                            <a href="funcionario_edicao.php?id=<?= $row['id'] ?>" class="edit">Editar</a>
+                            <a href="funcionario_edicao.php?id=<?= htmlspecialchars($row['id'] ?? '') ?>" class="edit">Editar</a>
                         </td>
                     </tr>
                 <?php endwhile; ?>

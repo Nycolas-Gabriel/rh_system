@@ -29,23 +29,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $genero = $_POST['genero'];
     $tipo = $_POST['tipo'];
     $numero_registro = $_POST['numero_registro'];
+    $status = $_POST['status'];
 
     // Atualiza os dados no banco
-    $sql = "UPDATE funcionarios SET 
-            nome = '$nome', 
-            matricula = '$matricula', 
-            data_nascimento = '$data_nascimento', 
-            cpf = '$cpf', 
-            identidade = '$identidade', 
-            data_admissao = '$data_admissao', 
-            email = '$email', 
-            telefone = '$telefone', 
-            cargo = '$cargo', 
-            filhos = '$filhos', 
-            genero = '$genero', 
-            tipo = '$tipo', 
-            numero_registro = '$numero_registro' 
-            WHERE id = $id";
+$sql = "UPDATE funcionarios SET 
+        nome = '$nome', 
+        matricula = '$matricula', 
+        data_nascimento = '$data_nascimento', 
+        cpf = '$cpf', 
+        identidade = '$identidade', 
+        data_admissao = '$data_admissao', 
+        email = '$email', 
+        telefone = '$telefone', 
+        cargo = '$cargo', 
+        filhos = '$filhos', 
+        genero = '$genero', 
+        tipo = '$tipo', 
+        numero_registro = '$numero_registro', 
+        status = '$status'
+        WHERE id = $id";
 
     if ($conn->query($sql) === TRUE) {
         echo "Funcionário atualizado com sucesso!";
@@ -109,6 +111,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <label for="numero_registro">Número de Registro:</label>
             <input type="text" id="numero_registro" name="numero_registro" value="<?php echo htmlspecialchars($row['numero_registro'] ?? ''); ?>">
+
+            <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                <option value="Ativo" <?php echo ($row['status'] == 'Ativo') ? 'selected' : ''; ?>>Ativo</option>
+                <option value="Inativo" <?php echo ($row['status'] == 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
+                <option value="Licença" <?php echo ($row['status'] == 'Licença') ? 'selected' : ''; ?>>Licença</option>
+                <option value="Desligado" <?php echo ($row['status'] == 'Desligado') ? 'selected' : ''; ?>>Desligado</option>
+            </select>
 
             <button type="submit">Salvar</button>
         </form>
